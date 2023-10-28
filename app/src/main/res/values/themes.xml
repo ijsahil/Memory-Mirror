@@ -1,0 +1,19 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MemoryMirror" parent="Theme.Material3.Light">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.MemoryMirror" parent="Base.Theme.MemoryMirror" />
+
+    <style name="CustomNoActionbarTheme" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="CustomToolbarStyle">
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="colorControlNormal">#FFFFFF</item>
+    </style>
+</resources>

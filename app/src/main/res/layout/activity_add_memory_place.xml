@@ -4,7 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     tools:context=".AddMemoryPlaceActivity">
+=======
+    tools:context=".activities.AddMemoryPlaceActivity">
+>>>>>>> 078a4db (files added)
 
 
     <androidx.appcompat.widget.Toolbar
@@ -48,7 +52,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/title"
+<<<<<<< HEAD
                     android:inputType="text"
+=======
+                    android:inputType="textCapWords"
+>>>>>>> 078a4db (files added)
                     android:textColor="@color/colorAccent"
                     android:textColorHint="@color/colorAccent" />
             </com.google.android.material.textfield.TextInputLayout>

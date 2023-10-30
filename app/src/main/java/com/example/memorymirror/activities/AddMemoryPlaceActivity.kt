@@ -3,6 +3,7 @@ package com.example.memorymirror.activities
 import android.Manifest.permission.CAMERA
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -146,6 +147,7 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
         startActivityIfNeeded(galleryIntent, GALLERY_REQUEST_CODE)
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
     private fun openCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (cameraIntent.resolveActivity(packageManager) != null) {
@@ -298,6 +300,7 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+                finish()
             }
         }
 

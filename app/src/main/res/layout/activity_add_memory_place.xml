@@ -58,7 +58,8 @@
                     android:inputType="textCapWords"
 >>>>>>> 078a4db (files added)
                     android:textColor="@color/colorAccent"
-                    android:textColorHint="@color/colorAccent" />
+                    android:textColorHint="#546E7A"
+                    tools:ignore="VisualLintTextFieldSize" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -78,7 +79,8 @@
                     android:hint="@string/description"
                     android:inputType="text"
                     android:textColor="@color/colorAccent"
-                    android:textColorHint="@color/colorAccent" />
+                    android:textColorHint="#546E7A"
+                    tools:ignore="VisualLintTextFieldSize" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -94,13 +96,14 @@
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/etDate"
                     android:layout_width="match_parent"
-                    android:hint="@string/date"
-                    android:inputType="none"
+                    android:layout_height="wrap_content"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
-                    android:layout_height="wrap_content"
+                    android:hint="@string/date"
+                    android:inputType="none"
                     android:textColor="@color/colorAccentDark"
-                    android:textColorHint="@color/colorAccent" />
+                    android:textColorHint="#546E7A"
+                    tools:ignore="VisualLintTextFieldSize" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -120,7 +123,8 @@
                     android:hint="@string/location"
                     android:inputType="text"
                     android:textColor="@color/colorAccent"
-                    android:textColorHint="@color/colorAccent" />
+                    android:textColorHint="#546E7A"
+                    tools:ignore="VisualLintTextFieldSize" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
@@ -129,7 +133,7 @@
                 android:layout_height="200dp"
                 android:layout_margin="20dp"
                 android:background="@drawable/display_image_bg_border"
-                android:contentDescription="TODO"
+                android:contentDescription="@string/selected_image"
                 android:scaleType="centerCrop"
                 android:src="@drawable/emptyimagebg"
                 app:layout_constraintStart_toStartOf="parent"
@@ -141,14 +145,14 @@
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:text="ADD IMAGE"
+                android:text="@string/add_image"
                 android:textColor="@color/colorAccentDark"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/btnSave"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ivDisplayImage"
                 app:layout_constraintTop_toBottomOf="@id/tfLocation"
-                tools:targetApi="m" />
+              />
 
             <Button
                 android:id="@+id/btnSave"
@@ -156,12 +160,13 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="24dp"
                 android:backgroundTint="@color/colorAccentDark"
-                android:text="SAVE"
+                android:text="@string/save_image"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ivDisplayImage" />
+                app:layout_constraintTop_toBottomOf="@+id/ivDisplayImage"
+                tools:ignore="VisualLintButtonSize" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

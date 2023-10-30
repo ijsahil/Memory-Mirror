@@ -5,4 +5,7 @@
     <string name="description">Description</string>
     <string name="date">Date</string>
     <string name="location">Location</string>
+    <string name="add_image">ADD IMAGE</string>
+    <string name="save_image">SAVE</string>
+    <string name="selected_image">Selected Image</string>
 </resources>

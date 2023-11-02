@@ -27,7 +27,7 @@ import com.example.memorymirror.R
 import com.example.memorymirror.database.MemoryMirrorDao
 import com.example.memorymirror.database.MemoryMirrorEntity
 import com.example.memorymirror.databinding.ActivityAddMemoryPlaceBinding
-import com.example.memorymirror.models.MemoryMirrorApp
+import com.example.memorymirror.util.MemoryMirrorApp
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -50,19 +50,37 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
     private lateinit var dateSetListener: OnDateSetListener
     private lateinit var memoryMirrorDao: MemoryMirrorDao
     private var saveImageToInternalStorage: Uri? = null
+
+    private var updatedMemory: MemoryMirrorEntity? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddMemoryPlaceBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbarAddMemoryPlaces)
-        if (supportActionBar != null) {
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        memoryMirrorDao = (application as MemoryMirrorApp).db.memoryMirrorDao()
+        if (intent.hasExtra(MainActivity.EXTRA_PLACE_DETAILS)) {
+            updatedMemory = intent.getParcelableExtra(MainActivity.EXTRA_PLACE_DETAILS)
         }
-        binding.toolbarAddMemoryPlaces
-            .setNavigationOnClickListener {
-                onBackPressedDispatcher.onBackPressed()
+        if (updatedMemory != null) {
+            if (supportActionBar != null) {
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                supportActionBar?.title = "Update Your Memory"
             }
+            binding.etDate.setText(updatedMemory!!.date)
+            binding.etLocation.setText(updatedMemory!!.location)
+            binding.etDescription.setText(updatedMemory!!.description)
+            binding.etTitle.setText(updatedMemory!!.title)
+            binding.ivDisplayImage.setImageURI(Uri.parse(updatedMemory!!.image))
+            saveImageToInternalStorage = Uri.parse(updatedMemory!!.image)
 
+        } else {
+            if (supportActionBar != null) {
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            }
+        }
+        binding.toolbarAddMemoryPlaces.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
 
         dateSetListener = OnDateSetListener { _, year, month, dayOfMonth ->
             cal.set(Calendar.YEAR, year)
@@ -73,7 +91,68 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
         binding.btnSave.setOnClickListener(this)
         binding.etDate.setOnClickListener(this)
         binding.tvAddImage.setOnClickListener(this)
-        memoryMirrorDao = (application as MemoryMirrorApp).db.memoryMirrorDao()
+    }
+
+    private fun updateDataInDatabase(
+        memoryMirrorDao: MemoryMirrorDao, memory: MemoryMirrorEntity?
+    ) {
+        val title = binding.etTitle.text.toString()
+        val description = binding.etDescription.text.toString()
+        val date = binding.etDate.text.toString()
+        val location = binding.etLocation.text.toString()
+        when {
+            title.isBlank() -> {
+                Toast.makeText(
+                    this@AddMemoryPlaceActivity, "Title cannot be empty", Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            description.isBlank() -> {
+                Toast.makeText(
+                    this@AddMemoryPlaceActivity, "Description cannot be empty", Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            date.isBlank() -> {
+                Toast.makeText(
+                    this@AddMemoryPlaceActivity, "Date cannot be blank", Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            location.isBlank() -> {
+                Toast.makeText(
+                    this@AddMemoryPlaceActivity, "Location cannot be empty", Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            saveImageToInternalStorage == null -> {
+                Toast.makeText(
+                    this@AddMemoryPlaceActivity, "Please took the image", Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            else -> {
+                val id = memory!!.id
+                val mirrorEntity = MemoryMirrorEntity(
+                    id = id,
+                    title,
+                    description,
+                    date,
+                    saveImageToInternalStorage.toString(),
+                    location
+                )
+                lifecycleScope.launch {
+                    memoryMirrorDao.update(mirrorEntity)
+                    Toast.makeText(
+                        this@AddMemoryPlaceActivity,
+                        "Memory updated successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                saveImageToInternalStorage = null
+                finish()
+            }
+        }
     }
 
     override fun onClick(v: View?) {
@@ -98,8 +177,7 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
                         0 -> {
                             chooseImageFromGalleryOrCamera(
                                 arrayListOf(
-                                    READ_EXTERNAL_STORAGE,
-                                    WRITE_EXTERNAL_STORAGE
+                                    READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
                                 )
                             ) { openGallery() }
                             Log.e("Checked", "Yes the flow is reached here")
@@ -115,35 +193,39 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
             }
 
             R.id.btnSave -> {
-                addDataToDatabase(memoryMirrorDao)
+                if (updatedMemory != null) {
+                    updateDataInDatabase(memoryMirrorDao, updatedMemory)
+                } else {
+                    addDataToDatabase(memoryMirrorDao)
+                }
             }
         }
     }
 
-    private fun chooseImageFromGalleryOrCamera(permissionList: List<String>, function: () -> Unit) {
-        Dexter.withContext(this@AddMemoryPlaceActivity)
-            .withPermissions(
-                permissionList
-            )
-            .withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(multiplePermissionsReport: MultiplePermissionsReport) {
-                    if (multiplePermissionsReport.areAllPermissionsGranted()) {
-                        function.invoke()
-                    }
+    private fun chooseImageFromGalleryOrCamera(
+        permissionList: List<String>, function: () -> Unit
+    ) {
+        Dexter.withContext(this@AddMemoryPlaceActivity).withPermissions(
+            permissionList
+        ).withListener(object : MultiplePermissionsListener {
+            override fun onPermissionsChecked(multiplePermissionsReport: MultiplePermissionsReport) {
+                if (multiplePermissionsReport.areAllPermissionsGranted()) {
+                    function.invoke()
                 }
+            }
 
-                override fun onPermissionRationaleShouldBeShown(
-                    p0: MutableList<com.karumi.dexter.listener.PermissionRequest>?,
-                    permissionToken: PermissionToken?
-                ) {
-                    showSettingsDialog()
-                }
-            })
-            .onSameThread().check()
+            override fun onPermissionRationaleShouldBeShown(
+                p0: MutableList<com.karumi.dexter.listener.PermissionRequest>?,
+                permissionToken: PermissionToken?
+            ) {
+                showSettingsDialog()
+            }
+        }).onSameThread().check()
     }
 
     private fun openGallery() {
-        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        val galleryIntent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityIfNeeded(galleryIntent, GALLERY_REQUEST_CODE)
     }
 
@@ -241,9 +323,7 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
         when {
             binding.etTitle.text.isNullOrBlank() -> {
                 Toast.makeText(
-                    this@AddMemoryPlaceActivity,
-                    "Title cannot be empty",
-                    Toast.LENGTH_SHORT
+                    this@AddMemoryPlaceActivity, "Title cannot be empty", Toast.LENGTH_SHORT
                 ).show()
             }
 
@@ -257,25 +337,19 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
 
             binding.etDate.text.isNullOrBlank() -> {
                 Toast.makeText(
-                    this@AddMemoryPlaceActivity,
-                    "Date cannot be blank",
-                    Toast.LENGTH_SHORT
+                    this@AddMemoryPlaceActivity, "Date cannot be blank", Toast.LENGTH_SHORT
                 ).show()
             }
 
             binding.etLocation.text.isNullOrBlank() -> {
                 Toast.makeText(
-                    this@AddMemoryPlaceActivity,
-                    "Location cannot be empty",
-                    Toast.LENGTH_SHORT
+                    this@AddMemoryPlaceActivity, "Location cannot be empty", Toast.LENGTH_SHORT
                 ).show()
             }
 
             saveImageToInternalStorage == null -> {
                 Toast.makeText(
-                    this@AddMemoryPlaceActivity,
-                    "Please took the image",
-                    Toast.LENGTH_SHORT
+                    this@AddMemoryPlaceActivity, "Please took the image", Toast.LENGTH_SHORT
                 ).show()
             }
 
@@ -300,6 +374,8 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+                // Make the image value to null
+                saveImageToInternalStorage = null
                 finish()
             }
         }

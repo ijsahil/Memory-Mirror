@@ -8,4 +8,5 @@
     <string name="add_image">ADD IMAGE</string>
     <string name="save_image">SAVE</string>
     <string name="selected_image">Selected Image</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

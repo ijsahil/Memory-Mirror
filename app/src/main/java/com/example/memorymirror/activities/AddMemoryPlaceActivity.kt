@@ -28,6 +28,10 @@ import com.example.memorymirror.database.MemoryMirrorDao
 import com.example.memorymirror.database.MemoryMirrorEntity
 import com.example.memorymirror.databinding.ActivityAddMemoryPlaceBinding
 import com.example.memorymirror.util.MemoryMirrorApp
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -50,8 +54,10 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
     private lateinit var dateSetListener: OnDateSetListener
     private lateinit var memoryMirrorDao: MemoryMirrorDao
     private var saveImageToInternalStorage: Uri? = null
-
+    private var mLatitude: Double? = null
+    private var mLongitude: Double? = null
     private var updatedMemory: MemoryMirrorEntity? = null
+    private var insertedMemory: MemoryMirrorEntity? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddMemoryPlaceBinding.inflate(layoutInflater)
@@ -91,6 +97,14 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
         binding.btnSave.setOnClickListener(this)
         binding.etDate.setOnClickListener(this)
         binding.tvAddImage.setOnClickListener(this)
+        binding.etLocation.setOnClickListener(this)
+
+        if (!Places.isInitialized()) {
+            Places.initialize(
+                this@AddMemoryPlaceActivity,
+                resources.getString(R.string.google_map_api_key)
+            )
+        }
     }
 
     private fun updateDataInDatabase(
@@ -133,7 +147,7 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
 
             else -> {
                 val id = memory!!.id
-                val mirrorEntity = MemoryMirrorEntity(
+                val updateMemoryMirrorEntity = MemoryMirrorEntity(
                     id = id,
                     title,
                     description,
@@ -142,7 +156,7 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
                     location
                 )
                 lifecycleScope.launch {
-                    memoryMirrorDao.update(mirrorEntity)
+                    memoryMirrorDao.update(updateMemoryMirrorEntity)
                     Toast.makeText(
                         this@AddMemoryPlaceActivity,
                         "Memory updated successfully",
@@ -191,6 +205,24 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
                 val dialog = alertDialog.create()
                 dialog.show()
             }
+
+            R.id.etLocation -> {
+                try {
+                    val fields = listOf(
+                        Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG,
+                        Place.Field.ADDRESS
+                    )
+                    val intent =
+                        Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+                            .build(this@AddMemoryPlaceActivity)
+                    startActivityIfNeeded(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE)
+
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
 
             R.id.btnSave -> {
                 if (updatedMemory != null) {
@@ -298,6 +330,13 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
                     Log.e("Saved image :", "Path :: $saveImageToInternalStorage")
                     binding.ivDisplayImage.setImageBitmap(photo)
                 }
+
+                PLACE_AUTOCOMPLETE_REQUEST_CODE -> {
+                    val place: Place = Autocomplete.getPlaceFromIntent(data!!)
+                    binding.etLocation.setText(place.address)
+                    mLatitude = place.latLng!!.latitude
+                    mLongitude = place.latLng!!.longitude
+                }
             }
         }
     }
@@ -359,7 +398,7 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
                 val date = binding.etDate.text.toString()
                 val location = binding.etLocation.text.toString()
                 val image = saveImageToInternalStorage.toString()
-                val memoryMirrorEntity = MemoryMirrorEntity(
+                insertedMemory = MemoryMirrorEntity(
                     title = title,
                     description = description,
                     date = date,
@@ -367,7 +406,7 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
                     location = location
                 )
                 lifecycleScope.launch {
-                    memoryMirrorDao.insert(memoryMirrorEntity)
+                    memoryMirrorDao.insert(insertedMemory!!)
                     Toast.makeText(
                         this@AddMemoryPlaceActivity,
                         "Memory made successfully !!!",
@@ -379,11 +418,12 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
                 finish()
             }
         }
-
     }
+
 
     companion object {
         private const val GALLERY_REQUEST_CODE = 1001
         private const val CAMERA_REQUEST_CODE = 1002
+        private const val PLACE_AUTOCOMPLETE_REQUEST_CODE = 1003
     }
 }

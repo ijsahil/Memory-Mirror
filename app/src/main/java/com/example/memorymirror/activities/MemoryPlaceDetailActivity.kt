@@ -1,5 +1,6 @@
 package com.example.memorymirror.activities
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -31,5 +32,10 @@ class MemoryPlaceDetailActivity : AppCompatActivity() {
             binding?.tvDescription?.text = memoryList.description
             binding?.tvLocation?.text = memoryList.location
         }
+            binding?.btnMap?.setOnClickListener {
+                val intent = Intent(this@MemoryPlaceDetailActivity,MapActivity::class.java)
+                intent.putExtra(MainActivity.EXTRA_PLACE_DETAILS,memoryList)
+                startActivity(intent)
+            }
     }
 }

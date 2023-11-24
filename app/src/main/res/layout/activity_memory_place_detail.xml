@@ -10,22 +10,22 @@
         android:id="@+id/toolbarAddMemoryPlacesDetail"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:theme="@style/CustomToolbarStyle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_memoryImage"
-        android:layout_width="0dp"
-        android:layout_height= "400dp"
-        android:layout_margin="16dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="276dp"
+        android:layout_height="293dp"
+        android:layout_margin="12dp"
+        app:civ_border_color="#FF000000"
+        app:civ_border_width="2dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarAddMemoryPlacesDetail"
-        tools:src="@drawable/emptyimagebg" />
+        app:layout_constraintTop_toBottomOf="@id/toolbarAddMemoryPlacesDetail"
+        tools:src="@mipmap/ic_launcher_round" />
 
     <TextView
         android:id="@+id/tv_description"
@@ -34,38 +34,42 @@
         android:layout_marginTop="6dp"
         android:layout_marginStart="22dp"
         android:textAlignment="textStart"
-        android:textSize="12sp"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_memoryImage"
         tools:text="Description testing hey this is sahil and i am testing description here what's up babies "/>
 
 
-    <Button
+    <TextView
         android:id="@+id/btnMap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="20dp"
         android:backgroundTint="@color/colorAccent"
+        android:foreground="?selectableItemBackground"
         android:text="View on Map"
+        android:visibility="gone"
         android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.328"
+        app:layout_constraintHorizontal_bias="0.036"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_memoryImage"
-        app:layout_constraintVertical_bias="0.184"
+        app:layout_constraintTop_toBottomOf="@+id/tv_location"
+        app:layout_constraintVertical_bias="0.98"
         tools:ignore="VisualLintButtonSize" />
 
     <TextView
-    android:id="@+id/tv_location"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="12dp"
-    android:layout_marginStart="22dp"
-    android:textSize="16sp"
-    android:textStyle="bold"
-    tools:text="Bhopal"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/tv_description"/>
+        android:id="@+id/tv_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="112dp"
+        android:textSize="20sp"
+        android:visibility="gone"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_description"
+        tools:text="Bhopal" />
 </androidx.constraintlayout.widget.ConstraintLayout>

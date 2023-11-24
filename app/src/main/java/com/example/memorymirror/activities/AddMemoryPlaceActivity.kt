@@ -113,7 +113,9 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
         val title = binding.etTitle.text.toString()
         val description = binding.etDescription.text.toString()
         val date = binding.etDate.text.toString()
-        val location = binding.etLocation.text.toString()
+        val location = if(binding.etLocation.text.isNullOrBlank()) {
+            "No Location"
+        } else binding.etLocation.text.toString()
         when {
             title.isBlank() -> {
                 Toast.makeText(
@@ -130,12 +132,6 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
             date.isBlank() -> {
                 Toast.makeText(
                     this@AddMemoryPlaceActivity, "Date cannot be blank", Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            location.isBlank() -> {
-                Toast.makeText(
-                    this@AddMemoryPlaceActivity, "Location cannot be empty", Toast.LENGTH_SHORT
                 ).show()
             }
 
@@ -380,11 +376,6 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
                 ).show()
             }
 
-            binding.etLocation.text.isNullOrBlank() -> {
-                Toast.makeText(
-                    this@AddMemoryPlaceActivity, "Location cannot be empty", Toast.LENGTH_SHORT
-                ).show()
-            }
 
             saveImageToInternalStorage == null -> {
                 Toast.makeText(
@@ -396,7 +387,9 @@ class AddMemoryPlaceActivity : AppCompatActivity(), OnClickListener {
                 val title = binding.etTitle.text.toString()
                 val description = binding.etDescription.text.toString()
                 val date = binding.etDate.text.toString()
-                val location = binding.etLocation.text.toString()
+                val location = if(binding.etLocation.text.isNullOrBlank()) {
+                    "No Location"
+                } else binding.etLocation.text.toString()
                 val image = saveImageToInternalStorage.toString()
                 insertedMemory = MemoryMirrorEntity(
                     title = title,
